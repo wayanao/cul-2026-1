@@ -24,12 +24,12 @@ async def get_horario(horario_id: int):
     return rpta
 
 @router.get("/get_horario_docente/{docente_id}")
-async def get_horario_docente(docente_id: int, id_periodo: int, current_user = Depends(get_current_user)):
+async def get_horario_docente(docente_id: int, id_periodo: int, id_programa: int = None, current_user = Depends(get_current_user)):
     if docente_id != current_user["user_id"]:
         if current_user["rol"] != 1:
             raise HTTPException(status_code=403, detail="No autorizado")
     
-    rpta = nuevo_horario.get_horario_docente(id_periodo, docente_id)
+    rpta = nuevo_horario.get_horario_docente(id_periodo, docente_id, id_programa)
     return rpta
     
 @router.get("/get_horario_programa/{id_programa}")

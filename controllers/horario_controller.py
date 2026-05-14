@@ -64,11 +64,22 @@ class HorarioController:
         finally:
             conn.close()
 
-    def get_horario_docente(self, id_periodo: int, docente_id: int):
+    def get_horario_docente(self, id_periodo: int, docente_id: int, id_programa: int = None):
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
-            cursor.execute("SELECT h.id_horario, h.id_grupo, g.codigo_grupo, h.id_docente, d.primer_nombre, d.segundo_nombre, d.primer_apellido, d.segundo_apellido, h.id_asignatura, a.nombre, h.dia_semana, h.hora_inicio, h.hora_fin, h.id_jornada, j.nombre, h.id_periodo, p.nombre FROM horarios h join grupos g on h.id_grupo = g.id_grupo join docentes d on h.id_docente = d.id_docente join asignaturas a on h.id_asignatura = a.id_asignatura join jornadas j on h.id_jornada = j.id_jornada join periodos p on h.id_periodo = p.id_periodo WHERE h.id_periodo = %s AND h.id_docente = %s", (id_periodo, docente_id))
+            
+            # Construir la consulta con filtro opcional por programa
+            query = "SELECT h.id_horario, h.id_grupo, g.codigo_grupo, h.id_docente, d.primer_nombre, d.segundo_nombre, d.primer_apellido, d.segundo_apellido, h.id_asignatura, a.nombre, h.dia_semana, h.hora_inicio, h.hora_fin, h.id_jornada, j.nombre, h.id_periodo, p.nombre FROM horarios h join grupos g on h.id_grupo = g.id_grupo join docentes d on h.id_docente = d.id_docente join asignaturas a on h.id_asignatura = a.id_asignatura join jornadas j on h.id_jornada = j.id_jornada join periodos p on h.id_periodo = p.id_periodo WHERE h.id_periodo = %s AND h.id_docente = %s"
+            
+            params = [id_periodo, docente_id]
+            
+            # Agregar filtro por programa si se proporciona
+            if id_programa is not None:
+                query += " AND a.id_programa = %s"
+                params.append(id_programa)
+            
+            cursor.execute(query, params)
             result = cursor.fetchall()
 
             if result:
