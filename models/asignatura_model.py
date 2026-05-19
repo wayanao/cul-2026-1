@@ -5,4 +5,4 @@ class Asignatura(BaseModel):
     id_programa: int
     programa: str | None = None
     nombre: str
-    estado: bool
+    estado: bool = True

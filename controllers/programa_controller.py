@@ -120,3 +120,32 @@ class ProgramaController:
             raise HTTPException(status_code=500, detail="Error al eliminar programa")
         finally:
             conn.close()
+    
+    def get_programa_by_asignatura(self, asignatura_id: int):
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT p.id_programa, p.nombre, p.codigo, p.id_facultad, f.nombre, p.estado FROM programas p JOIN asignaturas a ON p.id_programa = a.id_programa JOIN facultades f ON p.id_facultad = f.id WHERE a.id_asignatura = %s AND p.estado = true", (asignatura_id,))
+            result = cursor.fetchone()
+            
+            if result:
+                content={
+                        'id':int(result[0]),
+                        'nombre':result[1],
+                        'codigo':result[2],
+                        'id_facultad':int(result[3]),
+                        'nombre_facultad':result[4],
+                        'estado':result[5]
+                }
+                
+                json_data = jsonable_encoder(content)            
+                return  json_data
+            else:
+                raise HTTPException(status_code=404, detail="programa not found")  
+                
+        except psycopg2.Error as err:
+            print(err)
+            conn.rollback()
+            raise HTTPException(status_code=500, detail="Error al obtener programa por asignatura")
+        finally:
+            conn.close()

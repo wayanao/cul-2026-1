@@ -36,3 +36,8 @@ async def update_programa(programa_id: int, programa: Programa):
 async def delete_programa(programa_id: int):
     rpta = nuevo_programa.delete_programa(programa_id)
     return rpta
+
+@router.get("/get_programa_by_asignatura/{asignatura_id}", response_model=Programa)
+async def get_programa_by_asignatura(asignatura_id: int):
+    rpta = nuevo_programa.get_programa_by_asignatura(asignatura_id)
+    return rpta
