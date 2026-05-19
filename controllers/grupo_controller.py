@@ -94,6 +94,44 @@ class GrupoController:
             raise HTTPException(status_code=500, detail="Error al obtener grupos")
         finally:
             conn.close()
+
+    def get_grupos_by_periodo_jornada(self, id_periodo: int, id_jornada: int):
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT g.id_grupo, g.id_periodo, s.nombre, g.id_jornada, j.nombre, g.codigo_grupo, g.cupo, g.estado "
+                "FROM grupos g "
+                "JOIN periodos s ON g.id_periodo = s.id_periodo "
+                "JOIN jornadas j ON g.id_jornada = j.id_jornada "
+                "WHERE g.id_periodo = %s AND g.id_jornada = %s AND g.estado = true",
+                (id_periodo, id_jornada)
+            )
+            result = cursor.fetchall()
+
+            if result:
+                payload = []
+                for data in result:
+                    payload.append({
+                        'id': data[0],
+                        'id_periodo': data[1],
+                        'periodo': data[2],
+                        'id_jornada': data[3],
+                        'jornada': data[4],
+                        'codigo': data[5],
+                        'cupo': int(data[6]),
+                        'estado': bool(data[7])
+                    })
+                json_data = jsonable_encoder(payload)
+                return {"resultado": json_data}
+            else:
+                raise HTTPException(status_code=404, detail="grupo not found")
+        except psycopg2.Error as err:
+            print(err)
+            conn.rollback()
+            raise HTTPException(status_code=500, detail="Error al obtener grupos filtrados")
+        finally:
+            conn.close()
     
     def update_grupo(self, grupo_id: int, grupo: Grupo):
         try:

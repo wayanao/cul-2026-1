@@ -27,7 +27,12 @@ async def get_grupo(grupo_id: int):
 async def get_grupos():
     rpta = nuevo_grupo.get_grupos()
     return rpta
-1
+
+@router.get("/get_grupos/filter")
+async def get_grupos_by_periodo_jornada(id_periodo: int, id_jornada: int):
+    rpta = nuevo_grupo.get_grupos_by_periodo_jornada(id_periodo, id_jornada)
+    return rpta
+
 @router.put("/update_grupo/{grupo_id}")
 async def update_grupo(grupo_id: int, grupo: Grupo):
     rpta = nuevo_grupo.update_grupo(grupo_id, grupo)
