@@ -8,4 +8,4 @@ class Grupo(BaseModel):
     jornada:str|None=None
     codigo:str
     cupo:int
-    estado:bool
+    estado:bool=None

@@ -5,5 +5,5 @@ class Programa(BaseModel):
     nombre:str
     codigo:str
     id_facultad: int
-    nombre_facultad: str | None
-    estado:bool
+    nombre_facultad: str | None = None
+    estado:bool = True
